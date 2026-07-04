@@ -12,11 +12,9 @@ Bu proje, serbest çalışırken sürekli karşılaşılan iki soruna doğrudan 
 
 ## Ekran Görüntüleri
 
-> Görseller yakında eklenecek — aşağıdaki alanlar yer tutucudur.
-
 | Panel | İşlem Ekle | Ayarlar |
 | --- | --- | --- |
-| ![Panel ekranı](docs/screenshots/panel.png) | ![İşlem ekleme ekranı](docs/screenshots/islem.png) | ![Ayarlar ekranı](docs/screenshots/ayarlar.png) |
+| ![Panel ekranı](public/screenshots/panel.png) | ![İşlem ekleme ekranı](public/screenshots/islem.png) | ![Ayarlar ekranı](public/screenshots/ayarlar.png) |
 
 ## Ne yapar?
 
