@@ -1,5 +1,5 @@
 import Dexie from "dexie";
-import type { Txn, Settings, Subscription, Goal } from "./types";
+import type { Txn, Settings, Subscription, Goal, Notification } from "./types";
 
 export type SettingsRow = Settings & { id: number };
 
@@ -18,6 +18,9 @@ function createDb(): Dexie {
   });
   db.version(3).stores({
     goals: "id, createdAt",
+  });
+  db.version(4).stores({
+    notifications: "id, createdAt, isRead",
   });
   return db;
 }
@@ -53,6 +56,10 @@ export function getSubscriptionsTable(): Dexie.Table<Subscription, string> {
 
 export function getGoalsTable(): Dexie.Table<Goal, string> {
   return (_db as Dexie & { goals: Dexie.Table<Goal, string> }).goals;
+}
+
+export function getNotificationsTable(): Dexie.Table<Notification, string> {
+  return (_db as Dexie & { notifications: Dexie.Table<Notification, string> }).notifications;
 }
 
 export const DEFAULT_SETTINGS: Settings = {

@@ -2,8 +2,9 @@
 
 import { create } from "zustand";
 import { DEFAULT_SETTINGS } from "@/lib/db";
-import { lsLoadTxns, lsLoadSettings, lsSaveTxns, lsSaveSettings, lsLoadSubscriptions, lsSaveSubscriptions, lsLoadGoals, lsSaveGoals } from "@/lib/storage";
-import type { Txn, Settings, Subscription, Goal } from "@/lib/types";
+import { lsLoadTxns, lsLoadSettings, lsSaveTxns, lsSaveSettings, lsLoadSubscriptions, lsSaveSubscriptions, lsLoadGoals, lsSaveGoals, lsLoadNotifications, lsSaveNotifications } from "@/lib/storage";
+import { formatCurrency } from "@/lib/format";
+import type { Txn, Settings, Subscription, Goal, Notification } from "@/lib/types";
 
 export type StorageBackend = "indexeddb" | "localstorage";
 
@@ -12,6 +13,7 @@ type Store = {
   settings:           Settings;
   subscriptions:      Subscription[];
   goals:              Goal[];
+  notifications:      Notification[];
   loaded:             boolean;
   backend:            StorageBackend;
   load:               () => Promise<void>;
@@ -25,6 +27,11 @@ type Store = {
   updateGoal:         (goal: Goal)  => void;
   deleteGoal:         (id: string)  => void;
   addToGoal:          (id: string, amount: number) => void;
+  addNotification:    (n: Omit<Notification, "id" | "createdAt" | "isRead">) => void;
+  markAsRead:         (id: string)  => void;
+  markAllAsRead:      () => void;
+  deleteNotification: (id: string)  => void;
+  unreadCount:        () => number;
 };
 
 function fallbackToLS(set: (s: Partial<Store>) => void) {
@@ -33,9 +40,64 @@ function fallbackToLS(set: (s: Partial<Store>) => void) {
     settings:      lsLoadSettings(),
     subscriptions: lsLoadSubscriptions(),
     goals:         lsLoadGoals(),
+    notifications: lsLoadNotifications(),
     loaded:        true,
     backend:       "localstorage",
   });
+}
+
+// ── Bildirim mükerrer önleme — localStorage'da son tetiklenme tarihi ────────
+
+function todayStr(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function firedToday(key: string): boolean {
+  try { return localStorage.getItem(key) === todayStr(); } catch { return false; }
+}
+
+function markFiredToday(key: string) {
+  try { localStorage.setItem(key, todayStr()); } catch { /* quota */ }
+}
+
+function goalNotifKey(goalId: string): string {
+  return `hotspot_notif_goal_${goalId}`;
+}
+
+function checkGoalNotification(goal: Goal, addNotification: Store["addNotification"]) {
+  if (goal.targetAmount <= 0) return;
+  const pct = (goal.currentAmount / goal.targetAmount) * 100;
+  if (pct < 80) return;
+  const key = goalNotifKey(goal.id);
+  try {
+    if (localStorage.getItem(key)) return;
+    localStorage.setItem(key, "1");
+  } catch { return; }
+  addNotification({
+    type: "goal",
+    title: "Hedefe Az Kaldı! 🎯",
+    message: `${goal.name} hedefine %${Math.round(pct)} ulaştın!`,
+    link: "/",
+  });
+}
+
+function persistNotifications(notifications: Notification[], backend: StorageBackend) {
+  if (backend === "localstorage") {
+    lsSaveNotifications(notifications);
+    return;
+  }
+  (async () => {
+    try {
+      const { getNotificationsTable } = await import("@/lib/db");
+      await Promise.race([
+        getNotificationsTable().bulkPut(notifications),
+        new Promise((_, r) => setTimeout(() => r(new Error("write timeout")), 3000)),
+      ]);
+    } catch (e) {
+      console.warn("Notifications IndexedDB yazımı başarısız:", e);
+      lsSaveNotifications(notifications);
+    }
+  })();
 }
 
 function persistGoals(goals: Goal[], backend: StorageBackend) {
@@ -102,6 +164,7 @@ export const useStore = create<Store>((set, get) => ({
   settings:      DEFAULT_SETTINGS,
   subscriptions: [],
   goals:         [],
+  notifications: [],
   loaded:        false,
   backend:       "indexeddb",
 
@@ -159,8 +222,17 @@ export const useStore = create<Store>((set, get) => ({
         goals = lsLoadGoals();
       }
 
+      let notifications: Notification[] = [];
+      try {
+        const { getNotificationsTable } = await import("@/lib/db");
+        notifications = await getNotificationsTable().toArray();
+      } catch (e) {
+        console.warn("notifications okunamadı:", e);
+        notifications = lsLoadNotifications();
+      }
+
       clearTimeout(hardTimer);
-      if (!get().loaded) set({ txns, settings, subscriptions: subs, goals, loaded: true, backend: "indexeddb" });
+      if (!get().loaded) set({ txns, settings, subscriptions: subs, goals, notifications, loaded: true, backend: "indexeddb" });
     } catch (err) {
       clearTimeout(hardTimer);
       console.error("DB yüklenemedi:", err);
@@ -174,6 +246,19 @@ export const useStore = create<Store>((set, get) => ({
     const next = [txn, ...get().txns];
     set({ txns: next });
     persistTxns(next, get().backend);
+
+    if (txn.type === "income" && !firedToday("hotspot_notif_tax")) {
+      const rate = txn.taxRateAtTime ?? get().settings.taxRate;
+      const taxAmount = txn.amount * rate;
+      get().addNotification({
+        type: "tax",
+        title: "Vergi Kenarını Ayır 🧾",
+        message: `${formatCurrency(txn.amount)} gelir eklendi. ${formatCurrency(taxAmount)} vergi kenarına ayrılmalı.`,
+        link: "/ayarlar",
+      });
+      markFiredToday("hotspot_notif_tax");
+    }
+
     return true;
   },
 
@@ -256,6 +341,7 @@ export const useStore = create<Store>((set, get) => ({
     const next = get().goals.map((g) => (g.id === goal.id ? goal : g));
     set({ goals: next });
     persistGoals(next, get().backend);
+    checkGoalNotification(goal, get().addNotification);
   },
 
   deleteGoal: (id) => {
@@ -280,6 +366,7 @@ export const useStore = create<Store>((set, get) => ({
     const next = goals.map((g) => (g.id === id ? updated : g));
     set({ goals: next });
     persistGoals(next, get().backend);
+    checkGoalNotification(updated, get().addNotification);
     // Expense olarak işlem geçmişine ekle
     const txn = {
       id: crypto.randomUUID(),
@@ -293,4 +380,48 @@ export const useStore = create<Store>((set, get) => ({
     set({ txns });
     persistTxns(txns, get().backend);
   },
+
+  addNotification: (n) => {
+    const newNotif: Notification = {
+      id: crypto.randomUUID(),
+      createdAt: new Date().toISOString(),
+      isRead: false,
+      ...n,
+    };
+    const next = [newNotif, ...get().notifications];
+    set({ notifications: next });
+    persistNotifications(next, get().backend);
+  },
+
+  markAsRead: (id) => {
+    const next = get().notifications.map((n) => (n.id === id ? { ...n, isRead: true } : n));
+    set({ notifications: next });
+    persistNotifications(next, get().backend);
+  },
+
+  markAllAsRead: () => {
+    const next = get().notifications.map((n) => ({ ...n, isRead: true }));
+    set({ notifications: next });
+    persistNotifications(next, get().backend);
+  },
+
+  deleteNotification: (id) => {
+    const next = get().notifications.filter((n) => n.id !== id);
+    set({ notifications: next });
+    if (get().backend === "localstorage") {
+      lsSaveNotifications(next);
+    } else {
+      (async () => {
+        try {
+          const { getNotificationsTable } = await import("@/lib/db");
+          await getNotificationsTable().delete(id);
+        } catch (e) {
+          console.warn("Notification silinemedi:", e);
+          lsSaveNotifications(next);
+        }
+      })();
+    }
+  },
+
+  unreadCount: () => get().notifications.filter((n) => !n.isRead).length,
 }));

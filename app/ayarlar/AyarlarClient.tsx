@@ -9,6 +9,7 @@ import BottomNav from "@/components/BottomNav";
 import PinSettings from "@/components/PinSettings";
 import ThemeSettings from "@/components/ThemeSettings";
 import ReportSettings from "@/components/ReportSettings";
+import NotificationBell from "@/components/NotificationBell";
 
 function DarkInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   const [focused, setFocused] = useState(false);
@@ -85,15 +86,18 @@ export default function AyarlarClient() {
   return (
     <div className="page-container" style={{ background: "var(--bg-page)" }}>
       <header
-        className="px-4 pt-4 pb-4 safe-top"
+        className="px-4 pt-4 pb-4 safe-top flex items-start justify-between"
         style={{ background: "var(--bg-header)", borderBottom: "1px solid var(--border-header)" }}
       >
-        <h1 className="text-lg font-bold" style={{ color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
-          {isOnboarding ? "Kazanı Kur 🪄" : "Ayarlar"}
-        </h1>
-        <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>
-          {isOnboarding ? "Başlamak için birkaç rakam gir" : "Finansal parametrelerini güncelle"}
-        </p>
+        <div>
+          <h1 className="text-lg font-bold" style={{ color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
+            {isOnboarding ? "Kazanı Kur 🪄" : "Ayarlar"}
+          </h1>
+          <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>
+            {isOnboarding ? "Başlamak için birkaç rakam gir" : "Finansal parametrelerini güncelle"}
+          </p>
+        </div>
+        {!isOnboarding && <NotificationBell />}
       </header>
 
       <main className="px-4 pt-5 pb-24" style={{ paddingBottom: 320 }}>

@@ -13,6 +13,7 @@ import IncomeChart from "@/components/IncomeChart";
 import SubscriptionCard from "@/components/dashboard/SubscriptionCard";
 import GoalsCard from "@/components/dashboard/GoalsCard";
 import IksirCard from "@/components/dashboard/IksirCard";
+import NotificationBell from "@/components/NotificationBell";
 
 export default function PanelPage() {
   const { txns, settings, loaded, load, backend } = useStore();
@@ -52,12 +53,15 @@ export default function PanelPage() {
           <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
           <span className="font-bold text-lg" style={{ color: "var(--text-primary)", letterSpacing: "-0.5px" }}>HotSpot</span>
         </div>
-        <span
-          className="text-xs px-3 py-1 rounded-full font-medium"
-          style={{ background: "rgba(124,58,237,0.2)", color: "#a78bfa" }}
-        >
-          Kazan kaynıyor 🪄
-        </span>
+        <div className="flex items-center gap-2">
+          <span
+            className="text-xs px-3 py-1 rounded-full font-medium"
+            style={{ background: "rgba(124,58,237,0.2)", color: "#a78bfa" }}
+          >
+            Kazan kaynıyor 🪄
+          </span>
+          <NotificationBell />
+        </div>
       </header>
 
       <main className="px-4 space-y-3 pt-6">

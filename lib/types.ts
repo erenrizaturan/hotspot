@@ -51,3 +51,15 @@ export type Goal = {
   createdAt: string;
   archivedAt?: string;
 };
+
+export type NotificationType = "tax" | "salary" | "goal" | "buffer" | "subscription";
+
+export type Notification = {
+  id: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+  link?: string;
+};

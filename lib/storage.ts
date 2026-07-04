@@ -1,6 +1,6 @@
 "use client";
 
-import type { Txn, Settings, Subscription, Goal } from "./types";
+import type { Txn, Settings, Subscription, Goal, Notification } from "./types";
 import { DEFAULT_SETTINGS } from "./db";
 
 const LS_TXNS      = "hs_txns";
@@ -8,6 +8,7 @@ const LS_SETTINGS  = "hs_settings";
 const LS_SUBS      = "hs_subscriptions";
 const LS_DISMISSED = "hs_dismissed_detect";
 const LS_GOALS     = "hs_goals";
+const LS_NOTIFS    = "hs_notifications";
 
 // ── localStorage helpers ────────────────────────────────────────────────────
 
@@ -77,6 +78,18 @@ export function lsLoadGoals(): Goal[] {
 
 export function lsSaveGoals(goals: Goal[]) {
   try { localStorage.setItem(LS_GOALS, JSON.stringify(goals)); } catch { /* quota */ }
+}
+
+export function lsLoadNotifications(): Notification[] {
+  try {
+    const raw = localStorage.getItem(LS_NOTIFS);
+    if (!raw) return [];
+    return JSON.parse(raw) as Notification[];
+  } catch { return []; }
+}
+
+export function lsSaveNotifications(notifications: Notification[]) {
+  try { localStorage.setItem(LS_NOTIFS, JSON.stringify(notifications)); } catch { /* quota */ }
 }
 
 // ── IndexedDB availability check ────────────────────────────────────────────
