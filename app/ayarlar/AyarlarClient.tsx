@@ -3,8 +3,12 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useStore } from "@/store/useStore";
+import { useKeyboardFix } from "@/lib/useKeyboardFix";
 import type { Settings } from "@/lib/types";
 import BottomNav from "@/components/BottomNav";
+import PinSettings from "@/components/PinSettings";
+import ThemeSettings from "@/components/ThemeSettings";
+import ReportSettings from "@/components/ReportSettings";
 
 function DarkInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   const [focused, setFocused] = useState(false);
@@ -12,18 +16,24 @@ function DarkInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       style={{
-        background: "#111219",
-        border: `1px solid ${focused ? "#7c3aed" : "rgba(255,255,255,0.1)"}`,
+        background: "var(--bg-input)",
+        border: `1px solid ${focused ? "#7c3aed" : "var(--border-input)"}`,
         borderRadius: 12,
-        color: "#ffffff",
+        color: "var(--text-primary)",
         padding: "14px 16px",
         width: "100%",
         fontSize: 16,
         outline: "none",
         transition: "border-color 150ms ease",
       }}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
+      onFocus={(e) => {
+        setFocused(true);
+        props.onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        setFocused(false);
+        props.onBlur?.(e);
+      }}
     />
   );
 }
@@ -32,11 +42,11 @@ function SettingCard({ label, hint, children }: { label: string; hint: string; c
   return (
     <div
       className="rounded-2xl p-5 space-y-3"
-      style={{ background: "#111219", border: "1px solid rgba(255,255,255,0.06)" }}
+      style={{ background: "var(--bg-card)", border: "1px solid var(--border-card)" }}
     >
       <div>
-        <p className="text-sm font-semibold text-white">{label}</p>
-        <p className="text-xs mt-0.5" style={{ color: "#8b92a5" }}>{hint}</p>
+        <p className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>{label}</p>
+        <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>{hint}</p>
       </div>
       {children}
     </div>
@@ -44,6 +54,7 @@ function SettingCard({ label, hint, children }: { label: string; hint: string; c
 }
 
 export default function AyarlarClient() {
+  useKeyboardFix();
   const { settings, saveSettings, load, loaded } = useStore();
   const router       = useRouter();
   const searchParams = useSearchParams();
@@ -72,27 +83,27 @@ export default function AyarlarClient() {
   }
 
   return (
-    <div className="min-h-[100dvh] pb-24" style={{ background: "#0a0b0f" }}>
+    <div className="page-container" style={{ background: "var(--bg-page)" }}>
       <header
         className="px-4 pt-4 pb-4 safe-top"
-        style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+        style={{ background: "var(--bg-header)", borderBottom: "1px solid var(--border-header)" }}
       >
-        <h1 className="text-lg font-bold text-white" style={{ letterSpacing: "-0.5px" }}>
+        <h1 className="text-lg font-bold" style={{ color: "var(--text-primary)", letterSpacing: "-0.5px" }}>
           {isOnboarding ? "Kazanı Kur 🪄" : "Ayarlar"}
         </h1>
-        <p className="text-xs mt-0.5" style={{ color: "#8b92a5" }}>
+        <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>
           {isOnboarding ? "Başlamak için birkaç rakam gir" : "Finansal parametrelerini güncelle"}
         </p>
       </header>
 
-      <main className="px-4 pt-5">
+      <main className="px-4 pt-5 pb-24" style={{ paddingBottom: 320 }}>
         {isOnboarding && (
           <div
             className="rounded-2xl p-4 mb-5 text-sm"
             style={{ background: "rgba(124,58,237,0.1)", border: "1px solid rgba(124,58,237,0.3)", color: "#a78bfa" }}
           >
             <p className="font-semibold mb-1">Hoş geldin! 👋</p>
-            <p style={{ color: "#8b92a5" }}>Kazanının nasıl kaynayacağını ayarla. İstediğin zaman değiştirebilirsin.</p>
+            <p style={{ color: "var(--text-secondary)" }}>Kazanının nasıl kaynayacağını ayarla. İstediğin zaman değiştirebilirsin.</p>
           </div>
         )}
 
@@ -128,6 +139,27 @@ export default function AyarlarClient() {
             {saving ? "Kaydediliyor…" : saved ? "✓ Kaydedildi!" : isOnboarding ? "Kazanı Başlat 🚀" : "Kaydet"}
           </button>
         </form>
+
+        {!isOnboarding && (
+          <div className="mt-3 space-y-1">
+            <p className="text-xs font-semibold px-1 mb-2" style={{ color: "var(--text-secondary)" }}>Görünüm</p>
+            <ThemeSettings />
+          </div>
+        )}
+
+        {!isOnboarding && (
+          <div className="mt-3 space-y-1">
+            <p className="text-xs font-semibold px-1 mb-2" style={{ color: "var(--text-secondary)" }}>Güvenlik</p>
+            <PinSettings />
+          </div>
+        )}
+
+        {!isOnboarding && (
+          <div className="mt-3 space-y-1">
+            <p className="text-xs font-semibold px-1 mb-2" style={{ color: "var(--text-secondary)" }}>📄 Rapor</p>
+            <ReportSettings />
+          </div>
+        )}
 
         <p className="text-xs text-center mt-5 px-4" style={{ color: "rgba(139,146,165,0.5)" }}>
           Bu araç finansal/vergi tavsiyesi değildir. Gerçek vergi yükümlülüğün için mali müşavirine danış.

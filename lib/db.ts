@@ -1,5 +1,5 @@
 import Dexie from "dexie";
-import type { Txn, Settings } from "./types";
+import type { Txn, Settings, Subscription, Goal } from "./types";
 
 export type SettingsRow = Settings & { id: number };
 
@@ -12,6 +12,12 @@ function createDb(): Dexie {
   db.version(1).stores({
     transactions: "id, type, date",
     settings: "id",
+  });
+  db.version(2).stores({
+    subscriptions: "id, createdAt",
+  });
+  db.version(3).stores({
+    goals: "id, createdAt",
   });
   return db;
 }
@@ -39,6 +45,14 @@ export function getTransactions(): Dexie.Table<Txn, string> {
 
 export function getSettingsTable(): Dexie.Table<SettingsRow, number> {
   return (_db as Dexie & { settings: Dexie.Table<SettingsRow, number> }).settings;
+}
+
+export function getSubscriptionsTable(): Dexie.Table<Subscription, string> {
+  return (_db as Dexie & { subscriptions: Dexie.Table<Subscription, string> }).subscriptions;
+}
+
+export function getGoalsTable(): Dexie.Table<Goal, string> {
+  return (_db as Dexie & { goals: Dexie.Table<Goal, string> }).goals;
 }
 
 export const DEFAULT_SETTINGS: Settings = {

@@ -1,10 +1,13 @@
 "use client";
 
-import type { Txn, Settings } from "./types";
+import type { Txn, Settings, Subscription, Goal } from "./types";
 import { DEFAULT_SETTINGS } from "./db";
 
-const LS_TXNS     = "hs_txns";
-const LS_SETTINGS = "hs_settings";
+const LS_TXNS      = "hs_txns";
+const LS_SETTINGS  = "hs_settings";
+const LS_SUBS      = "hs_subscriptions";
+const LS_DISMISSED = "hs_dismissed_detect";
+const LS_GOALS     = "hs_goals";
 
 // ── localStorage helpers ────────────────────────────────────────────────────
 
@@ -34,6 +37,46 @@ export function lsSaveTxns(txns: Txn[]) {
 
 export function lsSaveSettings(s: Settings) {
   try { localStorage.setItem(LS_SETTINGS, JSON.stringify(s)); } catch { /* quota */ }
+}
+
+export function lsLoadSubscriptions(): Subscription[] {
+  try {
+    const raw = localStorage.getItem(LS_SUBS);
+    if (!raw) return [];
+    return JSON.parse(raw) as Subscription[];
+  } catch {
+    return [];
+  }
+}
+
+export function lsSaveSubscriptions(subs: Subscription[]) {
+  try { localStorage.setItem(LS_SUBS, JSON.stringify(subs)); } catch { /* quota */ }
+}
+
+export function lsLoadDismissedSources(): string[] {
+  try {
+    const raw = localStorage.getItem(LS_DISMISSED);
+    if (!raw) return [];
+    return JSON.parse(raw) as string[];
+  } catch {
+    return [];
+  }
+}
+
+export function lsSaveDismissedSources(sources: string[]) {
+  try { localStorage.setItem(LS_DISMISSED, JSON.stringify(sources)); } catch { /* quota */ }
+}
+
+export function lsLoadGoals(): Goal[] {
+  try {
+    const raw = localStorage.getItem(LS_GOALS);
+    if (!raw) return [];
+    return JSON.parse(raw) as Goal[];
+  } catch { return []; }
+}
+
+export function lsSaveGoals(goals: Goal[]) {
+  try { localStorage.setItem(LS_GOALS, JSON.stringify(goals)); } catch { /* quota */ }
 }
 
 // ── IndexedDB availability check ────────────────────────────────────────────

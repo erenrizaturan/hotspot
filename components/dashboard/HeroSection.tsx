@@ -33,7 +33,7 @@ export default function HeroSection({ state, status }: { state: DerivedState; st
         {label}
       </span>
       {status !== "green" && state.aboveBuffer < 0 && (
-        <p className="mt-3 text-xs" style={{ color: "#8b92a5" }}>
+        <p className="mt-3 text-xs" style={{ color: "var(--text-secondary)" }}>
           Tampon için {formatCurrency(Math.abs(state.aboveBuffer))} daha gerekli
         </p>
       )}

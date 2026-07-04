@@ -15,31 +15,31 @@ export default function IncomeVsTargetCard({ txns, targetSalary }: { txns: Txn[]
   return (
     <div
       className="rounded-2xl p-6"
-      style={{ background: "#111219", border: "1px solid rgba(255,255,255,0.06)" }}
+      style={{ background: "var(--bg-card)", border: "1px solid var(--border-card)" }}
     >
       <div className="flex items-start justify-between mb-4">
         <div>
           <p
             className="text-[11px] font-semibold uppercase mb-2"
-            style={{ color: "#8b92a5", letterSpacing: "1.5px" }}
+            style={{ color: "var(--text-secondary)", letterSpacing: "1.5px" }}
           >
             {label} Geliri
           </p>
-          <p className="text-2xl font-bold text-white">{formatCurrency(income)}</p>
+          <p className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>{formatCurrency(income)}</p>
           {targetSalary > 0 && (
-            <p className="text-[13px] mt-1" style={{ color: "#8b92a5" }}>
+            <p className="text-[13px] mt-1" style={{ color: "var(--text-secondary)" }}>
               Hedef maaş: {formatCurrency(targetSalary)}
             </p>
           )}
         </div>
         {targetSalary > 0 && (
-          <span className="text-sm font-semibold" style={{ color: ratio >= 1 ? "#10b981" : "#8b92a5" }}>
+          <span className="text-sm font-semibold" style={{ color: ratio >= 1 ? "#10b981" : "var(--text-secondary)" }}>
             %{Math.round(pct)}
           </span>
         )}
       </div>
       {targetSalary > 0 && (
-        <div className="w-full rounded-full h-1" style={{ background: "rgba(255,255,255,0.06)" }}>
+        <div className="w-full rounded-full h-1" style={{ background: "var(--border-subtle)" }}>
           <div
             className="h-1 rounded-full transition-all duration-500"
             style={{ width: `${pct}%`, background: "#10b981" }}

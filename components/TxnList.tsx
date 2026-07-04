@@ -15,7 +15,7 @@ const SIGN: Record<TxnType, string> = {
   income: "+", salary: "-", expense: "-", tax_payment: "-",
 };
 const AMOUNT_COLOR: Record<TxnType, string> = {
-  income: "#10b981", salary: "#ffffff", expense: "#ffffff", tax_payment: "#ffffff",
+  income: "#10b981", salary: "var(--text-primary)", expense: "var(--text-primary)", tax_payment: "var(--text-primary)",
 };
 
 export default function TxnList() {
@@ -26,7 +26,7 @@ export default function TxnList() {
     return (
       <div className="text-center py-16">
         <p className="text-3xl mb-3 opacity-30">🫙</p>
-        <p className="text-sm" style={{ color: "#8b92a5" }}>Henüz işlem yok. İlk gelirini ekle!</p>
+        <p className="text-sm" style={{ color: "var(--text-secondary)" }}>Henüz işlem yok. İlk gelirini ekle!</p>
       </div>
     );
   }
@@ -43,7 +43,7 @@ export default function TxnList() {
         <div
           key={txn.id}
           className="flex items-center gap-3 rounded-2xl px-4 py-3.5"
-          style={{ background: "#111219", border: "1px solid rgba(255,255,255,0.06)" }}
+          style={{ background: "var(--bg-card)", border: "1px solid var(--border-card)" }}
         >
           <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: TYPE_DOT[txn.type] }} />
           <div className="flex-1 min-w-0">
@@ -53,12 +53,12 @@ export default function TxnList() {
               </p>
               <span
                 className="text-[10px] px-1.5 py-0.5 rounded-full font-medium"
-                style={{ background: "rgba(255,255,255,0.06)", color: "#8b92a5" }}
+                style={{ background: "var(--border-subtle)", color: "var(--text-secondary)" }}
               >
                 {TYPE_LABEL[txn.type]}
               </span>
             </div>
-            <p className="text-xs truncate mt-0.5" style={{ color: "#8b92a5" }}>
+            <p className="text-xs truncate mt-0.5" style={{ color: "var(--text-secondary)" }}>
               {new Date(txn.date).toLocaleDateString("tr-TR")}
               {txn.source && ` · ${txn.source}`}
               {txn.note   && ` · ${txn.note}`}
@@ -68,9 +68,9 @@ export default function TxnList() {
             onClick={() => handleDelete(txn.id)}
             disabled={deleting === txn.id}
             className="p-1.5 rounded-lg transition-colors duration-150 disabled:opacity-40"
-            style={{ color: "rgba(255,255,255,0.2)" }}
-            onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "#ef4444")}
-            onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.color = "rgba(255,255,255,0.2)")}
+            style={{ color: "var(--text-secondary)", opacity: 0.5 }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = "#ef4444"; e.currentTarget.style.opacity = "1"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = "var(--text-secondary)"; e.currentTarget.style.opacity = "0.5"; }}
             aria-label="Sil"
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">

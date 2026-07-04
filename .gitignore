@@ -42,3 +42,5 @@ next-env.d.ts
 .claude/
 server.log
 server.err
+
+.vercel

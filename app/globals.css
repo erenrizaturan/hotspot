@@ -49,6 +49,20 @@
 }
 
 :root {
+  /* ── HotSpot tema değişkenleri: Aydınlık ──────────────────────────────── */
+  --bg-page: #f0fdf4;
+  --bg-card: #ffffff;
+  --border-card: rgba(16,185,129,0.15);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --bg-header: #ffffff;
+  --border-header: rgba(16,185,129,0.2);
+  --bg-tab: #ffffff;
+  --border-tab: rgba(16,185,129,0.15);
+  --bg-input: #f8fafc;
+  --border-input: #e2e8f0;
+  --border-subtle: rgba(16,185,129,0.12);
+
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -84,6 +98,20 @@
 }
 
 .dark {
+  /* ── HotSpot tema değişkenleri: Koyu ───────────────────────────────────── */
+  --bg-page: #0a0b0f;
+  --bg-card: #111219;
+  --border-card: rgba(255,255,255,0.06);
+  --text-primary: #ffffff;
+  --text-secondary: #8b92a5;
+  --bg-header: #0a0b0f;
+  --border-header: rgba(255,255,255,0.08);
+  --bg-tab: #0a0b0f;
+  --border-tab: rgba(255,255,255,0.08);
+  --bg-input: #111219;
+  --border-input: rgba(255,255,255,0.1);
+  --border-subtle: rgba(255,255,255,0.06);
+
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -121,6 +149,7 @@
   * {
     @apply border-border outline-ring/50;
     -webkit-tap-highlight-color: transparent;
+    transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
   }
   body {
     @apply bg-background text-foreground;
@@ -129,6 +158,8 @@
     @apply font-sans;
   }
   html, body {
+    height: 100%;
+    overflow: hidden;
     overscroll-behavior-y: none;
     -webkit-overflow-scrolling: touch;
   }
@@ -143,4 +174,30 @@
 }
 .safe-bottom {
   padding-bottom: max(env(safe-area-inset-bottom), 12px);
+}
+
+/* iOS PWA keyboard height variable — useKeyboardFix hook tarafından set edilir */
+:root { --kb-height: 0px; }
+
+/* Klavye açılınca sadece bu container scroll eder */
+.page-container {
+  height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--kb-height);
+  box-sizing: border-box;
+}
+
+input:focus, textarea:focus, select:focus {
+  scroll-margin-bottom: 320px;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-8px); }
+  30%       { transform: translateX(8px); }
+  45%       { transform: translateX(-6px); }
+  60%       { transform: translateX(6px); }
+  75%       { transform: translateX(-3px); }
+  90%       { transform: translateX(3px); }
 }

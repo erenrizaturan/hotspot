@@ -28,3 +28,26 @@ export type DerivedState = {
 };
 
 export type StatusColor = "green" | "amber" | "red";
+
+export type SubscriptionPeriod = "monthly" | "yearly";
+
+export type Subscription = {
+  id: string;
+  name: string;
+  amount: number;
+  period: SubscriptionPeriod;
+  isAuto: boolean;
+  isConfirmed: boolean;
+  createdAt: string;
+};
+
+export type Goal = {
+  id: string;
+  name: string;
+  targetAmount: number;
+  currentAmount: number;
+  emoji: string;
+  deadline?: string;
+  createdAt: string;
+  archivedAt?: string;
+};

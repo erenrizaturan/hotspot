@@ -40,7 +40,7 @@ export default function BottomNav() {
   return (
     <nav
       className="fixed bottom-0 left-0 right-0 safe-bottom z-50"
-      style={{ background: "#0a0b0f", borderTop: "1px solid rgba(255,255,255,0.08)" }}
+      style={{ background: "var(--bg-tab)", borderTop: "1px solid var(--border-tab)" }}
     >
       <div className="flex">
         {tabs.map((tab) => {
@@ -50,7 +50,7 @@ export default function BottomNav() {
               key={tab.href}
               href={tab.href}
               className="flex-1 flex flex-col items-center justify-center pt-2 pb-1 gap-0.5 relative transition-colors duration-150"
-              style={{ color: active ? "#10b981" : "#8b92a5" }}
+              style={{ color: active ? "#10b981" : "var(--text-secondary)" }}
             >
               {active && (
                 <span

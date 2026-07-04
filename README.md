@@ -4,11 +4,19 @@ Freelancer, gig çalışan ve serbest meslek sahipleri için düzensiz gelir bü
 
 **Tek soru:** "Bu ay X geldi ama gelecek ay belirsiz — ne kadarını güvenle harcayabilirim?"
 
+**Canlı:** https://hotspot-vert.vercel.app
+
 ## Ne yapar?
 
 - **Güvenle harcanabilir tutarı** saniyeler içinde gösterir
 - **Vergi kenarını** (Dokunulmaz Kavanoz) gelirden anında ayırır
 - **Kazan süresi** (runway) hesaplar: hiç gelir gelmese kaç ay dayanırsın?
+- **Abonelik dedektörü** tekrar eden ödemeleri otomatik tespit eder
+- **Hedef takibi** ile birikim hedeflerinin ilerlemesini izler
+- **PIN kilidi** ile uygulamayı yetkisiz erişime karşı korur
+- **İksir havuzu** ile hedeflere özel fon ayırır
+- **Tema geçişi** (açık/koyu mod) desteği
+- **PDF rapor** oluşturma
 - Tüm veriler **yalnızca cihazında** kalır — sunucu yok, hesap yok
 
 ## Nasıl çalıştırılır?

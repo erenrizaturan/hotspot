@@ -14,20 +14,20 @@ export default function IncomeChart({ txns, targetSalary }: { txns: Txn[]; targe
   return (
     <div
       className="rounded-2xl p-6"
-      style={{ background: "#111219", border: "1px solid rgba(255,255,255,0.06)" }}
+      style={{ background: "var(--bg-card)", border: "1px solid var(--border-card)" }}
     >
       <p
         className="text-[11px] font-semibold uppercase mb-5"
-        style={{ color: "#8b92a5", letterSpacing: "1.5px" }}
+        style={{ color: "var(--text-secondary)", letterSpacing: "1.5px" }}
       >
         Son 12 Ay Geliri
       </p>
       <ResponsiveContainer width="100%" height={160}>
         <BarChart data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-          <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.04)" />
+          <CartesianGrid strokeDasharray="3 3" stroke="var(--border-subtle)" />
           <XAxis
             dataKey="month"
-            tick={{ fontSize: 10, fill: "#8b92a5" }}
+            tick={{ fontSize: 10, fill: "var(--text-secondary)" }}
             tickLine={false}
             axisLine={false}
           />
@@ -37,12 +37,12 @@ export default function IncomeChart({ txns, targetSalary }: { txns: Txn[]; targe
             contentStyle={{
               fontSize: 12,
               borderRadius: 10,
-              background: "#1a1d27",
-              border: "1px solid rgba(255,255,255,0.1)",
-              color: "#ffffff",
+              background: "var(--bg-input)",
+              border: "1px solid var(--border-input)",
+              color: "var(--text-primary)",
             }}
-            labelStyle={{ color: "#8b92a5" }}
-            cursor={{ fill: "rgba(255,255,255,0.03)" }}
+            labelStyle={{ color: "var(--text-secondary)" }}
+            cursor={{ fill: "var(--border-subtle)" }}
           />
           {targetSalary > 0 && (
             <ReferenceLine

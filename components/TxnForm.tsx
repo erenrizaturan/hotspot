@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useStore } from "@/store/useStore";
+import { useKeyboardFix } from "@/lib/useKeyboardFix";
 import type { TxnType, Txn } from "@/lib/types";
 
 const TYPES: { key: TxnType; label: string; sub: string; dot: string }[] = [
@@ -12,10 +13,10 @@ const TYPES: { key: TxnType; label: string; sub: string; dot: string }[] = [
 ];
 
 const inputBase: React.CSSProperties = {
-  background: "#111219",
-  border: "1px solid rgba(255,255,255,0.1)",
+  background: "var(--bg-input)",
+  border: "1px solid var(--border-input)",
   borderRadius: 12,
-  color: "#ffffff",
+  color: "var(--text-primary)",
   padding: "14px 16px",
   width: "100%",
   fontSize: 16,
@@ -28,14 +29,21 @@ function DarkInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      style={{ ...inputBase, borderColor: focused ? "#7c3aed" : "rgba(255,255,255,0.1)", ...props.style }}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
+      style={{ ...inputBase, borderColor: focused ? "#7c3aed" : "var(--border-input)", ...props.style }}
+      onFocus={(e) => {
+        setFocused(true);
+        props.onFocus?.(e);
+      }}
+      onBlur={(e) => {
+        setFocused(false);
+        props.onBlur?.(e);
+      }}
     />
   );
 }
 
 export default function TxnForm({ onAdded }: { onAdded?: () => void }) {
+  useKeyboardFix();
   const { addTxn, settings } = useStore();
   const [type,   setType]   = useState<TxnType>("income");
   const [amount, setAmount] = useState("");
@@ -80,7 +88,7 @@ export default function TxnForm({ onAdded }: { onAdded?: () => void }) {
 
       {/* Type picker */}
       <div>
-        <p className="text-[11px] font-semibold uppercase mb-3" style={{ color: "#8b92a5", letterSpacing: "1.5px" }}>
+        <p className="text-[11px] font-semibold uppercase mb-3" style={{ color: "var(--text-secondary)", letterSpacing: "1.5px" }}>
           İşlem Türü
         </p>
         <div className="grid grid-cols-2 gap-2">
@@ -94,14 +102,14 @@ export default function TxnForm({ onAdded }: { onAdded?: () => void }) {
                 onClick={() => setType(t.key)}
                 className="rounded-xl p-4 text-left transition-all duration-150"
                 style={{
-                  background: active ? "rgba(124,58,237,0.12)" : "#111219",
-                  border: active ? "1px solid #7c3aed" : "1px solid rgba(255,255,255,0.06)",
+                  background: active ? "rgba(124,58,237,0.12)" : "var(--bg-card)",
+                  border: active ? "1px solid #7c3aed" : "1px solid var(--border-card)",
                   opacity: saving ? 0.5 : 1,
                 }}
               >
                 <span className="w-2 h-2 rounded-full inline-block mb-2" style={{ background: t.dot }} />
-                <p className="text-sm font-semibold text-white leading-tight">{t.label}</p>
-                <p className="text-xs mt-0.5" style={{ color: "#8b92a5" }}>{t.sub}</p>
+                <p className="text-sm font-semibold leading-tight" style={{ color: "var(--text-primary)" }}>{t.label}</p>
+                <p className="text-xs mt-0.5" style={{ color: "var(--text-secondary)" }}>{t.sub}</p>
               </button>
             );
           })}
@@ -110,7 +118,7 @@ export default function TxnForm({ onAdded }: { onAdded?: () => void }) {
 
       {/* Amount */}
       <div>
-        <p className="text-[11px] font-semibold uppercase mb-2" style={{ color: "#8b92a5", letterSpacing: "1.5px" }}>
+        <p className="text-[11px] font-semibold uppercase mb-2" style={{ color: "var(--text-secondary)", letterSpacing: "1.5px" }}>
           Tutar (₺)
         </p>
         <DarkInput
@@ -124,7 +132,7 @@ export default function TxnForm({ onAdded }: { onAdded?: () => void }) {
           style={{ fontSize: 22, fontWeight: 700 }}
         />
         {type === "income" && (
-          <p className="text-xs mt-1.5" style={{ color: "#8b92a5" }}>
+          <p className="text-xs mt-1.5" style={{ color: "var(--text-secondary)" }}>
             Brüt tutar — vergi (%{Math.round(settings.taxRate * 100)}) otomatik ayrılır
           </p>
         )}
@@ -132,7 +140,7 @@ export default function TxnForm({ onAdded }: { onAdded?: () => void }) {
 
       {/* Date */}
       <div>
-        <p className="text-[11px] font-semibold uppercase mb-2" style={{ color: "#8b92a5", letterSpacing: "1.5px" }}>Tarih</p>
+        <p className="text-[11px] font-semibold uppercase mb-2" style={{ color: "var(--text-secondary)", letterSpacing: "1.5px" }}>Tarih</p>
         <DarkInput
           type="date"
           value={date}
@@ -144,7 +152,7 @@ export default function TxnForm({ onAdded }: { onAdded?: () => void }) {
 
       {type === "income" && (
         <div>
-          <p className="text-[11px] font-semibold uppercase mb-2" style={{ color: "#8b92a5", letterSpacing: "1.5px" }}>Kaynak (opsiyonel)</p>
+          <p className="text-[11px] font-semibold uppercase mb-2" style={{ color: "var(--text-secondary)", letterSpacing: "1.5px" }}>Kaynak (opsiyonel)</p>
           <DarkInput
             type="text"
             value={source}
@@ -156,7 +164,7 @@ export default function TxnForm({ onAdded }: { onAdded?: () => void }) {
       )}
 
       <div>
-        <p className="text-[11px] font-semibold uppercase mb-2" style={{ color: "#8b92a5", letterSpacing: "1.5px" }}>Not (opsiyonel)</p>
+        <p className="text-[11px] font-semibold uppercase mb-2" style={{ color: "var(--text-secondary)", letterSpacing: "1.5px" }}>Not (opsiyonel)</p>
         <DarkInput
           type="text"
           value={note}
